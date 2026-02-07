@@ -45,7 +45,7 @@ The system is built around a provider-based design:
 - Python 3.9+
 - FastAPI (or Flask)
 - SQLite
-- nfcpy (optional)
+- nfcpy 
 - Uvicorn
 
 ---
@@ -142,7 +142,7 @@ It is not a replacement for certified physical security systems.
 - Python 3.9+
 - FastAPI یا Flask
 - SQLite
-- nfcpy (اختیاری)
+- nfcpy 
 - Uvicorn
 
 ---
