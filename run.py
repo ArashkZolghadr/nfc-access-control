@@ -74,7 +74,7 @@ def ensure_default_zone():
 
 def create_app() -> Flask:
     
-    app = Flask(__name__)
+    app = Flask(__name__, template_folder='web/templates', static_folder='web/static')
     app.config.from_object(Config)
     
     
