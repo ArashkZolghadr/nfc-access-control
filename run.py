@@ -6,7 +6,7 @@ Path: /run.py
 import os
 import threading
 import logging
-from flask import Flask
+from flask import Flask, render_template
 from dotenv import load_dotenv
 
 # --- Database Imports ---
@@ -82,7 +82,7 @@ def create_app() -> Flask:
     
     @app.route('/')
     def index():
-        return {"status": "success", "message": "NFC Access Control API is running!"}
+        return render_template('index.html')
         
     return app
 

@@ -14,7 +14,6 @@ from sqlalchemy.orm import sessionmaker
 from core.database.modelsfiles.user import User
 from core.database.modelsfiles.access_log import AccessLog
 from core.database.modelsfiles.zone import Zone
-from core.NFC.nfc_handler import NFCHandler
 
 
 api_bp = Blueprint('api_bp', __name__)
@@ -24,6 +23,22 @@ DB_URI = os.getenv("DATABASE_URL", "sqlite:///nfc_access.db")
 engine_kwargs = {"check_same_thread": False} if "sqlite" in DB_URI else {}
 engine = create_engine(DB_URI, connect_args=engine_kwargs)
 SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
+
+
+@api_bp.route('/zones', methods=['GET'])
+def get_zones():
+    session = SessionLocal()
+    try:
+        zones = session.query(Zone).all()
+        zones_data = [zone.to_dict() for zone in zones]
+        
+        return jsonify({
+            "success": True,
+            "count": len(zones_data),
+            "data": zones_data
+        }), 200
+    finally:
+        session.close()
 
 @api_bp.route('/status', methods=['GET'])
 def get_status():

@@ -1,0 +1,292 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>سیستم کنترل دسترسی NFC</title>
+    <link rel="stylesheet" href="css/style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Vazirmatn:wght@300;400;500;700;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+    <div class="app-container">
+        <!-- Sidebar -->
+        <aside class="sidebar">
+            <div class="sidebar-header">
+                <div class="logo">
+                    <i class="fas fa-id-card"></i>
+                    <span>NFC Control</span>
+                </div>
+            </div>
+            <nav class="sidebar-nav">
+                <a href="#" class="nav-item active" data-section="dashboard">
+                    <i class="fas fa-chart-line"></i>
+                    <span>داشبورد</span>
+                </a>
+                <a href="#" class="nav-item" data-section="logs">
+                    <i class="fas fa-list-alt"></i>
+                    <span>لاگ‌های دسترسی</span>
+                </a>
+                <a href="#" class="nav-item" data-section="users">
+                    <i class="fas fa-users"></i>
+                    <span>کاربران</span>
+                </a>
+                <a href="#" class="nav-item" data-section="zones">
+                    <i class="fas fa-building"></i>
+                    <span>زون‌ها</span>
+                </a>
+                <a href="#" class="nav-item" data-section="simulator">
+                    <i class="fas fa-mobile-alt"></i>
+                    <span>شبیه‌ساز NFC</span>
+                </a>
+            </nav>
+            <div class="sidebar-footer">
+                <div class="status-indicator">
+                    <span class="status-dot online"></span>
+                    <span>سیستم آنلاین</span>
+                </div>
+            </div>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <!-- Header -->
+            <header class="top-header">
+                <div class="header-title">
+                    <h1>داشبورد</h1>
+                    <p>سیستم کنترل دسترسی NFC</p>
+                </div>
+                <div class="header-actions">
+                    <button class="btn-refresh" onclick="refreshData()">
+                        <i class="fas fa-sync-alt"></i>
+                    </button>
+                    <div class="time-display">
+                        <span id="currentTime"></span>
+                    </div>
+                </div>
+            </header>
+
+            <!-- Dashboard Section -->
+            <section id="dashboard" class="content-section active">
+                <!-- Stats Cards -->
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <div class="stat-icon users">
+                            <i class="fas fa-users"></i>
+                        </div>
+                        <div class="stat-info">
+                            <span class="stat-value" id="totalUsers">0</span>
+                            <span class="stat-label">کل کاربران</span>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon logs">
+                            <i class="fas fa-history"></i>
+                        </div>
+                        <div class="stat-info">
+                            <span class="stat-value" id="todayLogs">0</span>
+                            <span class="stat-label">ورود امروز</span>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon success">
+                            <i class="fas fa-check-circle"></i>
+                        </div>
+                        <div class="stat-info">
+                            <span class="stat-value" id="successRate">0%</span>
+                            <span class="stat-label">نرخ موفقیت</span>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon zones">
+                            <i class="fas fa-building"></i>
+                        </div>
+                        <div class="stat-info">
+                            <span class="stat-value" id="totalZones">0</span>
+                            <span class="stat-label">زون‌های فعال</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Recent Logs -->
+                <div class="content-card">
+                    <div class="card-header">
+                        <h2><i class="fas fa-clock"></i> آخرین دسترسی‌ها</h2>
+                    </div>
+                    <div class="card-body">
+                        <div class="logs-table-container">
+                            <table class="logs-table" id="recentLogsTable">
+                                <thead>
+                                    <tr>
+                                        <th>زمان</th>
+                                        <th>کاربر</th>
+                                        <th>زون</th>
+                                        <th>وضعیت</th>
+                                        <th>دستگاه</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="recentLogsBody">
+                                    <tr>
+                                        <td colspan="5" class="loading-cell">
+                                            <i class="fas fa-spinner fa-spin"></i>
+                                            در حال بارگذاری...
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Logs Section -->
+            <section id="logs" class="content-section">
+                <div class="content-card">
+                    <div class="card-header">
+                        <h2><i class="fas fa-list-alt"></i> لاگ‌های دسترسی</h2>
+                        <div class="card-actions">
+                            <select id="logsLimit" class="select-box" onchange="loadLogs()">
+                                <option value="10">10 ردیف</option>
+                                <option value="25">25 ردیف</option>
+                                <option value="50">50 ردیف</option>
+                                <option value="100">100 ردیف</option>
+                            </select>
+                            <button class="btn btn-primary" onclick="loadLogs()">
+                                <i class="fas fa-sync"></i>
+                            </button>
+                        </div>
+                    </div>
+                    <div class="card-body">
+                        <div class="logs-table-container">
+                            <table class="logs-table">
+                                <thead>
+                                    <tr>
+                                        <th>#</th>
+                                        <th>زمان</th>
+                                        <th>کاربر</th>
+                                        <th>زون</th>
+                                        <th>وضعیت</th>
+                                        <th>دلیل</th>
+                                        <th>دستگاه</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="allLogsBody">
+                                    <tr>
+                                        <td colspan="7" class="loading-cell">
+                                            <i class="fas fa-spinner fa-spin"></i>
+                                            در حال بارگذاری...
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Users Section -->
+            <section id="users" class="content-section">
+                <div class="content-card">
+                    <div class="card-header">
+                        <h2><i class="fas fa-users"></i> لیست کاربران</h2>
+                    </div>
+                    <div class="card-body">
+                        <div class="users-grid" id="usersGrid">
+                            <div class="loading-state">
+                                <i class="fas fa-spinner fa-spin"></i>
+                                در حال بارگذاری...
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Zones Section -->
+            <section id="zones" class="content-section">
+                <div class="content-card">
+                    <div class="card-header">
+                        <h2><i class="fas fa-building"></i> زون‌ها</h2>
+                    </div>
+                    <div class="card-body">
+                        <div class="zones-grid" id="zonesGrid">
+                            <div class="loading-state">
+                                <i class="fas fa-spinner fa-spin"></i>
+                                در حال بارگذاری...
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Simulator Section -->
+            <section id="simulator" class="content-section">
+                <div class="simulator-container">
+                    <div class="simulator-card">
+                        <div class="nfc-animation">
+                            <div class="nfc-icon">
+                                <i class="fas fa-wifi"></i>
+                            </div>
+                            <div class="nfc-ring ring-1"></div>
+                            <div class="nfc-ring ring-2"></div>
+                            <div class="nfc-ring ring-3"></div>
+                        </div>
+                        <h2>شبیه‌ساز کارت NFC</h2>
+                        <p>یک UID برای کارت وارد کنید تا دسترسی را شبیه‌سازی کنید</p>
+                        
+                        <div class="simulator-form">
+                            <div class="form-group">
+                                <label>UID کارت</label>
+                                <input type="text" id="cardUid" placeholder="مثال: ABC123456789" class="input-field">
+                            </div>
+                            <div class="form-group">
+                                <label>زون</label>
+                                <select id="simZoneSelect" class="select-box">
+                                    <option value="1">زون پیش‌فرض</option>
+                                </select>
+                            </div>
+                            <button class="btn btn-simulate" onclick="simulateTap()">
+                                <i class="fas fa-rss"></i>
+                                شبیه‌سازی تپ
+                            </button>
+                        </div>
+
+                        <div id="simResult" class="sim-result hidden">
+                            <div class="result-icon" id="resultIcon">
+                                <i class="fas fa-check"></i>
+                            </div>
+                            <div class="result-content">
+                                <h3 id="resultTitle">دسترسی مجاز</h3>
+                                <p id="resultMessage">کاربر: علی محمدی</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="quick-cards">
+                        <h3>کارت‌های سریع</h3>
+                        <div class="quick-cards-grid">
+                            <button class="quick-card" onclick="quickSimulate('USER_001')">
+                                <i class="fas fa-id-card"></i>
+                                <span>کاربر ۱</span>
+                            </button>
+                            <button class="quick-card" onclick="quickSimulate('USER_002')">
+                                <i class="fas fa-id-card"></i>
+                                <span>کاربر ۲</span>
+                            </button>
+                            <button class="quick-card danger" onclick="quickSimulate('BLOCKED_001')">
+                                <i class="fas fa-ban"></i>
+                                <span>مسدود</span>
+                            </button>
+                            <button class="quick-card warning" onclick="quickSimulate('EXPIRED_001')">
+                                <i class="fas fa-clock"></i>
+                                <span>منقضی</span>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <script src="js/app.js"></script>
+</body>
+</html>
